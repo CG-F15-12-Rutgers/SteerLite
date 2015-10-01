@@ -11,6 +11,7 @@
 #include <util/Color.h>
 #include <util/DrawLib.h>
 #include "Globals.h"
+#include <math.h>
 
 using namespace Util;
 
@@ -45,19 +46,39 @@ void Curve::drawCurve(Color curveColor, float curveThickness, int window)
 {
 #ifdef ENABLE_GUI
 
+	/*
 	//================DELETE THIS PART AND THEN START CODING===================
 	static bool flag = false;
+
 	if (!flag)
 	{
 		std::cerr << "ERROR>>>>Member function drawCurve is not implemented!" << std::endl;
 		flag = true;
 	}
 	//=========================================================================
+	*/
+
+	Point startPoint, endPoint;
+	const int numberOfControl = controlPoints.size();
+	const int timeOfControl = controlPoints[numberOfControl - 1].time;
 
 	// Robustness: make sure there is at least two control point: start and end points
-
+	if (!checkRobust())
+	{
+		return;
+	}
+	// std::cout << "draw_curve is robust" << std::endl;
 	// Move on the curve from t=0 to t=finalPoint, using window as step size, and linearly interpolate the curve points
-	
+	if (!calculatePoint(startPoint, 1)) { return; }
+	// std::cout << "point 0 is working" << std::endl;
+	// std::cout << "time of the end control point is" << timeOfControl << "Number of steps :"<< (timeOfControl / window) - 1 << std::endl;
+	for (int i = 0; i < (timeOfControl / window); i++)
+	{
+		if (!calculatePoint(endPoint, (i+1)*window)) { return; }
+		// std::cout << "point " << i << " is working" << std::endl;
+		DrawLib::drawLine(startPoint, endPoint, curveColor, curveThickness);
+		startPoint = endPoint;
+	}
 	return;
 #endif
 }
@@ -65,6 +86,7 @@ void Curve::drawCurve(Color curveColor, float curveThickness, int window)
 // Sort controlPoints vector in ascending order: min-first
 void Curve::sortControlPoints()
 {
+	/*
 	//================DELETE THIS PART AND THEN START CODING===================
 	static bool flag = false;
 	if (!flag)
@@ -73,7 +95,16 @@ void Curve::sortControlPoints()
 		flag = true;
 	}
 	//=========================================================================
+	*/
+	struct timeAscending
+	{
+		inline bool operator() (const CurvePoint& point1, const CurvePoint& point2)
+		{
+			return(point1.time < point2.time);
+		}
+	};
 
+	std::sort(controlPoints.begin(), controlPoints.end(), timeAscending());
 	return;
 }
 
@@ -81,6 +112,7 @@ void Curve::sortControlPoints()
 bool Curve::calculatePoint(Point& outputPoint, float time)
 {
 	// Robustness: make sure there is at least two control point: start and end points
+	// Assume that the agent start position has been added into the controlPoints vector
 	if (!checkRobust())
 		return false;
 
@@ -109,6 +141,7 @@ bool Curve::calculatePoint(Point& outputPoint, float time)
 // Check Roboustness
 bool Curve::checkRobust()
 {
+	/*
 	//================DELETE THIS PART AND THEN START CODING===================
 	static bool flag = false;
 	if (!flag)
@@ -117,14 +150,15 @@ bool Curve::checkRobust()
 		flag = true;
 	}
 	//=========================================================================
-
-
-	return true;
+	*/
+	if (controlPoints.size()-2>=0)  return true;
+	else return false;
 }
 
 // Find the current time interval (i.e. index of the next control point to follow according to current time)
 bool Curve::findTimeInterval(unsigned int& nextPoint, float time)
 {
+	/*
 	//================DELETE THIS PART AND THEN START CODING===================
 	static bool flag = false;
 	if (!flag)
@@ -133,9 +167,24 @@ bool Curve::findTimeInterval(unsigned int& nextPoint, float time)
 		flag = true;
 	}
 	//=========================================================================
+	*/
+	const int numberOfControl = controlPoints.size();
 
+	if (time <= controlPoints[0].time | time > controlPoints[numberOfControl - 1].time) 
+	{
+		// std::cout << "ERROR>>>>Input time is out of the available time range" << std::endl;
+		return false;
+	}
 
-	return true;
+	for (int i = 0; i < numberOfControl; i++)
+	{
+		if (controlPoints[i].time < time & controlPoints[i + 1].time >= time) 
+		{ 
+			nextPoint = i + 1; 
+			return true;
+		}
+	}
+
 }
 
 // Implement Hermite curve
@@ -143,7 +192,7 @@ Point Curve::useHermiteCurve(const unsigned int nextPoint, const float time)
 {
 	Point newPosition;
 	float normalTime, intervalTime;
-
+	/*
 	//================DELETE THIS PART AND THEN START CODING===================
 	static bool flag = false;
 	if (!flag)
@@ -152,12 +201,21 @@ Point Curve::useHermiteCurve(const unsigned int nextPoint, const float time)
 		flag = true;
 	}
 	//=========================================================================
-
+	*/
 
 	// Calculate time interval, and normal time required for later curve calculations
-
+	float timeInterval = controlPoints[nextPoint].time - controlPoints[nextPoint-1].time;
+	float deltaTime = time - controlPoints[nextPoint - 1].time;
 	// Calculate position at t = time on Hermite curve
-
+	
+	newPosition =	controlPoints[nextPoint - 1].position.operator*(2 * pow(deltaTime / timeInterval, 3) -
+					3 * pow(deltaTime / timeInterval, 2) + 1).operator+(
+					controlPoints[nextPoint].position.operator*(-2 * pow(deltaTime / timeInterval, 3) +
+					3 * pow(deltaTime / timeInterval, 2))).operator+(
+					controlPoints[nextPoint - 1].tangent.operator*(pow(deltaTime / timeInterval, 2) -
+					2 * deltaTime / timeInterval + 1).operator*(deltaTime)).operator+(
+					controlPoints[nextPoint].tangent.operator*(pow(deltaTime / timeInterval, 2) -
+					1 * deltaTime / timeInterval).operator*(deltaTime));
 	// Return result
 	return newPosition;
 }
@@ -166,7 +224,7 @@ Point Curve::useHermiteCurve(const unsigned int nextPoint, const float time)
 Point Curve::useCatmullCurve(const unsigned int nextPoint, const float time)
 {
 	Point newPosition;
-
+	/*
 	//================DELETE THIS PART AND THEN START CODING===================
 	static bool flag = false;
 	if (!flag)
@@ -175,12 +233,97 @@ Point Curve::useCatmullCurve(const unsigned int nextPoint, const float time)
 		flag = true;
 	}
 	//=========================================================================
-
+	*/
 
 	// Calculate time interval, and normal time required for later curve calculations
+	float timeInterval = controlPoints[nextPoint].time - controlPoints[nextPoint-1].time;
+	float deltaTime = time - controlPoints[nextPoint - 1].time;
+	const int numberOfControl = controlPoints.size();
 
-	// Calculate position at t = time on Catmull-Rom curve
+	// general form
+	 Vector s0, si, sn, si_plus_1;
+	// calculate the first tangent
+	s0 = controlPoints[1].position.operator-(controlPoints[0].position).operator*
+		(((controlPoints[2].time - controlPoints[0].time) / (controlPoints[2].time - controlPoints[1].time)) / (controlPoints[1].time - controlPoints[0].time)).operator-
+		(controlPoints[2].position.operator-(controlPoints[0].position).operator*
+		(((controlPoints[1].time - controlPoints[0].time) / (controlPoints[2].time - controlPoints[1].time)) / (controlPoints[2].time - controlPoints[0].time)));
+
+	// calculate the last tangent
+	sn =	controlPoints[numberOfControl - 1].position.operator-(controlPoints[numberOfControl - 2].position).operator*
+			((controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 3].time) / (controlPoints[numberOfControl - 2].time - controlPoints[numberOfControl - 3].time) / (controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 2].time)).operator-
+			(controlPoints[numberOfControl - 1].position.operator-(controlPoints[numberOfControl - 3].position).operator*
+			((controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 2].time) / (controlPoints[numberOfControl - 2].time - controlPoints[numberOfControl - 3].time) / (controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 3].time)));
 	
+	// judge whether it is in the first or the last interval. If so, change the corresponding tangent 
+	if (nextPoint == 1) 
+	{ 
+		si = s0; 
+		si_plus_1 = controlPoints[nextPoint + 1].position.operator-(controlPoints[nextPoint].position).operator*
+			(((controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time) / (controlPoints[nextPoint + 1].time - controlPoints[nextPoint - 1].time)) / (controlPoints[nextPoint + 1].time - controlPoints[nextPoint].time)).operator+
+			(controlPoints[nextPoint].position.operator-(controlPoints[nextPoint - 1].position).operator*
+				(((controlPoints[nextPoint + 1].time - controlPoints[nextPoint].time) / (controlPoints[nextPoint + 1].time - controlPoints[nextPoint - 1].time)) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time)));
+
+	}
+	else if (nextPoint == numberOfControl - 1) 
+	{
+		si = controlPoints[nextPoint].position.operator-(controlPoints[nextPoint - 1].position).operator*
+			(((controlPoints[nextPoint - 1].time - controlPoints[nextPoint - 2].time) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 2].time)) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time)).operator+
+			(controlPoints[nextPoint - 1].position.operator-(controlPoints[nextPoint - 2].position).operator*
+				(((controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 2].time)) / (controlPoints[nextPoint - 1].time - controlPoints[nextPoint - 2].time)));
+
+		si_plus_1 = sn;
+	}
+	else 
+	{
+		// calculate each time interval si and si+1
+		si = controlPoints[nextPoint].position.operator-(controlPoints[nextPoint - 1].position).operator*
+			(((controlPoints[nextPoint - 1].time - controlPoints[nextPoint - 2].time) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 2].time)) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time)).operator+
+			(controlPoints[nextPoint - 1].position.operator-(controlPoints[nextPoint - 2].position).operator*
+				(((controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 2].time)) / (controlPoints[nextPoint - 1].time - controlPoints[nextPoint - 2].time)));
+		si_plus_1 = controlPoints[nextPoint + 1].position.operator-(controlPoints[nextPoint].position).operator*
+			(((controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time) / (controlPoints[nextPoint + 1].time - controlPoints[nextPoint - 1].time)) / (controlPoints[nextPoint + 1].time - controlPoints[nextPoint].time)).operator+
+			(controlPoints[nextPoint].position.operator-(controlPoints[nextPoint - 1].position).operator*
+				(((controlPoints[nextPoint + 1].time - controlPoints[nextPoint].time) / (controlPoints[nextPoint + 1].time - controlPoints[nextPoint - 1].time)) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time)));
+	}
+	// Calculate position at t = time on catmull curve
+
+	newPosition =	controlPoints[nextPoint - 1].position.operator*(2 * pow(deltaTime / timeInterval, 3) -
+					3 * pow(deltaTime / timeInterval, 2) + 1).operator+(
+					controlPoints[nextPoint].position.operator*(-2 * pow(deltaTime / timeInterval, 3) +
+					3 * pow(deltaTime / timeInterval, 2))).operator+(
+					si.operator*(pow(deltaTime / timeInterval, 2) -
+					2 * deltaTime / timeInterval + 1).operator*(deltaTime)).operator+(
+					si_plus_1.operator*(pow(deltaTime / timeInterval, 2) -
+					1 * deltaTime / timeInterval).operator*(deltaTime));
 	// Return result
+	
 	return newPosition;
+
+	// ====================================== save all si into a vector "catmullSiNew" =========================================//
+	/*
+	// general form
+	Vector s0, si, sn;
+	std::vector<Vector> catmullSiNew;
+	s0 = controlPoints[1].position.operator-(controlPoints[0].position).operator*
+	(((controlPoints[2].time - controlPoints[0].time) / (controlPoints[2].time - controlPoints[1].time)) / (controlPoints[1].time - controlPoints[0].time)).operator-
+	(controlPoints[2].position.operator-(controlPoints[0].position).operator*
+	(((controlPoints[1].time - controlPoints[0].time) / (controlPoints[2].time - controlPoints[1].time)) / (controlPoints[2].time - controlPoints[0].time)));
+
+	sn = controlPoints[numberOfControl - 1].position.operator-(controlPoints[numberOfControl - 2].position).operator*
+	((controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 3].time) / (controlPoints[numberOfControl - 2].time - controlPoints[numberOfControl - 3].time) / (controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 2].time)).operator-
+	(controlPoints[numberOfControl - 1].position.operator-(controlPoints[numberOfControl - 3].position).operator*
+	((controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 2].time) / (controlPoints[numberOfControl - 2].time - controlPoints[numberOfControl - 3].time) / (controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 3].time)));
+
+	catmullSiNew.push_back(s0);
+	for (int i = 1; i < (numberOfControl - 1), i++;)
+	{
+	si = controlPoints[i + 1].position.operator-(controlPoints[i].position).operator*
+	(((controlPoints[i].time - controlPoints[i - 1].time) / (controlPoints[i + 1].time - controlPoints[i - 1].time)) / (controlPoints[i + 1].time - controlPoints[i].time)).operator+
+	(controlPoints[i].position.operator-(controlPoints[i - 1].position).operator*
+	(((controlPoints[i + 1].time - controlPoints[i].time) / (controlPoints[i + 1].time - controlPoints[i - 1].time)) / (controlPoints[i].time - controlPoints[i - 1].time)));
+	catmullSiNew.push_back(si);
+	}
+	catmullSiNew.push_back(sn);
+
+	*/
 }
