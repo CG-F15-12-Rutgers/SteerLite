@@ -45,7 +45,7 @@
     <up> <x>0</x> <y>1</y> <z>0</z> </up>
     <fovy>45</fovy>
     <targetTangent> <x>0</x> <y>0</y> <z>0</z> </targetTangent>
-    <targetTime>150</targetTime>
+    <targetTime>100</targetTime>
   </suggestedCameraView>
 
   <agent>
@@ -75,7 +75,7 @@
       <seekStaticTarget>
         <targetLocation> <x>-10</x> <y>0</y> <z>-2</z> </targetLocation>
         <targetTangent> <x>-5</x> <y>0</y> <z>1</z> </targetTangent>
-        <targetTime>125</targetTime>
+        <targetTime>100</targetTime>
         <desiredSpeed>1.3</desiredSpeed>
         <timeDuration>10000</timeDuration>
       </seekStaticTarget>
