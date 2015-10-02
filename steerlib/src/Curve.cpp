@@ -242,51 +242,71 @@ Point Curve::useCatmullCurve(const unsigned int nextPoint, const float time)
 
 	// general form
 	 Vector s0, si, sn, si_plus_1;
-	// calculate the first tangent
-	s0 = controlPoints[1].position.operator-(controlPoints[0].position).operator*
-		(((controlPoints[2].time - controlPoints[0].time) / (controlPoints[2].time - controlPoints[1].time)) / (controlPoints[1].time - controlPoints[0].time)).operator-
-		(controlPoints[2].position.operator-(controlPoints[0].position).operator*
-		(((controlPoints[1].time - controlPoints[0].time) / (controlPoints[2].time - controlPoints[1].time)) / (controlPoints[2].time - controlPoints[0].time)));
-
-	// calculate the last tangent
-	sn =	controlPoints[numberOfControl - 1].position.operator-(controlPoints[numberOfControl - 2].position).operator*
-			((controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 3].time) / (controlPoints[numberOfControl - 2].time - controlPoints[numberOfControl - 3].time) / (controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 2].time)).operator-
-			(controlPoints[numberOfControl - 1].position.operator-(controlPoints[numberOfControl - 3].position).operator*
-			((controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 2].time) / (controlPoints[numberOfControl - 2].time - controlPoints[numberOfControl - 3].time) / (controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 3].time)));
 	
+	// judge whether there are controlPoints on same time 
+	float deltaTime0, deltaTime1, deltaTime2;
+	if (nextPoint != 1) 
+	{
+		deltaTime0 = controlPoints[nextPoint - 1].time - controlPoints[nextPoint - 2].time;
+	}
+	
+	deltaTime1 = controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time;
+	
+	if (nextPoint != numberOfControl - 1) 
+	{
+		deltaTime2 = controlPoints[nextPoint + 1].time - controlPoints[nextPoint].time;
+	}
+
+	if (deltaTime0 == 0) {
+		deltaTime0 = 50;
+	}
+	if (deltaTime1 == 0) {
+		deltaTime1 = 50;
+	}
+	if (deltaTime2 == 0) {
+		deltaTime2 = 50;
+	}
+
 	// judge whether it is in the first or the last interval. If so, change the corresponding tangent 
 	if (nextPoint == 1) 
 	{ 
-		si = s0; 
+		si = controlPoints[1].position.operator-(controlPoints[0].position).operator*
+			(((deltaTime1 + deltaTime2) / deltaTime2) / deltaTime1).operator-
+			(controlPoints[2].position.operator-(controlPoints[0].position).operator*
+				((deltaTime1 / deltaTime2) / (deltaTime1 + deltaTime2)));
+
 		si_plus_1 = controlPoints[nextPoint + 1].position.operator-(controlPoints[nextPoint].position).operator*
-			(((controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time) / (controlPoints[nextPoint + 1].time - controlPoints[nextPoint - 1].time)) / (controlPoints[nextPoint + 1].time - controlPoints[nextPoint].time)).operator+
+			((deltaTime1 / (deltaTime1 + deltaTime2)) / deltaTime2).operator+
 			(controlPoints[nextPoint].position.operator-(controlPoints[nextPoint - 1].position).operator*
-				(((controlPoints[nextPoint + 1].time - controlPoints[nextPoint].time) / (controlPoints[nextPoint + 1].time - controlPoints[nextPoint - 1].time)) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time)));
+				((deltaTime2 / (deltaTime1 + deltaTime2)) / deltaTime1));
 
 	}
 	else if (nextPoint == numberOfControl - 1) 
 	{
 		si = controlPoints[nextPoint].position.operator-(controlPoints[nextPoint - 1].position).operator*
-			(((controlPoints[nextPoint - 1].time - controlPoints[nextPoint - 2].time) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 2].time)) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time)).operator+
+			((deltaTime0 / (deltaTime1 + deltaTime0)) / deltaTime1).operator+
 			(controlPoints[nextPoint - 1].position.operator-(controlPoints[nextPoint - 2].position).operator*
-				(((controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 2].time)) / (controlPoints[nextPoint - 1].time - controlPoints[nextPoint - 2].time)));
+				((deltaTime1 / (deltaTime1 + deltaTime0)) / deltaTime0));
 
-		si_plus_1 = sn;
+		si_plus_1 = controlPoints[numberOfControl - 1].position.operator-(controlPoints[numberOfControl - 2].position).operator*
+			((deltaTime1 + deltaTime0) / deltaTime0 / deltaTime1).operator-
+			(controlPoints[numberOfControl - 1].position.operator-(controlPoints[numberOfControl - 3].position).operator*
+				(deltaTime1 / deltaTime0 / (deltaTime1 + deltaTime0)));
 	}
 	else 
 	{
 		// calculate each time interval si and si+1
 		si = controlPoints[nextPoint].position.operator-(controlPoints[nextPoint - 1].position).operator*
-			(((controlPoints[nextPoint - 1].time - controlPoints[nextPoint - 2].time) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 2].time)) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time)).operator+
+			((deltaTime0 / (deltaTime1 + deltaTime0)) / deltaTime1).operator+
 			(controlPoints[nextPoint - 1].position.operator-(controlPoints[nextPoint - 2].position).operator*
-				(((controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 2].time)) / (controlPoints[nextPoint - 1].time - controlPoints[nextPoint - 2].time)));
+				((deltaTime1 / (deltaTime1 + deltaTime0)) / deltaTime0));
 		si_plus_1 = controlPoints[nextPoint + 1].position.operator-(controlPoints[nextPoint].position).operator*
-			(((controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time) / (controlPoints[nextPoint + 1].time - controlPoints[nextPoint - 1].time)) / (controlPoints[nextPoint + 1].time - controlPoints[nextPoint].time)).operator+
+			((deltaTime1 / (deltaTime1 + deltaTime2)) / deltaTime2).operator+
 			(controlPoints[nextPoint].position.operator-(controlPoints[nextPoint - 1].position).operator*
-				(((controlPoints[nextPoint + 1].time - controlPoints[nextPoint].time) / (controlPoints[nextPoint + 1].time - controlPoints[nextPoint - 1].time)) / (controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time)));
+				((deltaTime2 / (deltaTime1 + deltaTime2)) / deltaTime1));
 	}
-	// Calculate position at t = time on catmull curve
 
+	// Calculate position at t = time on catmull curve
 	newPosition =	controlPoints[nextPoint - 1].position.operator*(2 * pow(deltaTime / timeInterval, 3) -
 					3 * pow(deltaTime / timeInterval, 2) + 1).operator+(
 					controlPoints[nextPoint].position.operator*(-2 * pow(deltaTime / timeInterval, 3) +
@@ -299,31 +319,4 @@ Point Curve::useCatmullCurve(const unsigned int nextPoint, const float time)
 	
 	return newPosition;
 
-	// ====================================== save all si into a vector "catmullSiNew" =========================================//
-	/*
-	// general form
-	Vector s0, si, sn;
-	std::vector<Vector> catmullSiNew;
-	s0 = controlPoints[1].position.operator-(controlPoints[0].position).operator*
-	(((controlPoints[2].time - controlPoints[0].time) / (controlPoints[2].time - controlPoints[1].time)) / (controlPoints[1].time - controlPoints[0].time)).operator-
-	(controlPoints[2].position.operator-(controlPoints[0].position).operator*
-	(((controlPoints[1].time - controlPoints[0].time) / (controlPoints[2].time - controlPoints[1].time)) / (controlPoints[2].time - controlPoints[0].time)));
-
-	sn = controlPoints[numberOfControl - 1].position.operator-(controlPoints[numberOfControl - 2].position).operator*
-	((controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 3].time) / (controlPoints[numberOfControl - 2].time - controlPoints[numberOfControl - 3].time) / (controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 2].time)).operator-
-	(controlPoints[numberOfControl - 1].position.operator-(controlPoints[numberOfControl - 3].position).operator*
-	((controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 2].time) / (controlPoints[numberOfControl - 2].time - controlPoints[numberOfControl - 3].time) / (controlPoints[numberOfControl - 1].time - controlPoints[numberOfControl - 3].time)));
-
-	catmullSiNew.push_back(s0);
-	for (int i = 1; i < (numberOfControl - 1), i++;)
-	{
-	si = controlPoints[i + 1].position.operator-(controlPoints[i].position).operator*
-	(((controlPoints[i].time - controlPoints[i - 1].time) / (controlPoints[i + 1].time - controlPoints[i - 1].time)) / (controlPoints[i + 1].time - controlPoints[i].time)).operator+
-	(controlPoints[i].position.operator-(controlPoints[i - 1].position).operator*
-	(((controlPoints[i + 1].time - controlPoints[i].time) / (controlPoints[i + 1].time - controlPoints[i - 1].time)) / (controlPoints[i].time - controlPoints[i - 1].time)));
-	catmullSiNew.push_back(si);
-	}
-	catmullSiNew.push_back(sn);
-
-	*/
 }
