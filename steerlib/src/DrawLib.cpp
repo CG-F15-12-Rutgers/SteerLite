@@ -434,7 +434,12 @@ int DrawLib::_buildAgentDisplayList()
 			glRotatef(-90, 1, 0, 0);
 
 			// draw cylinder aligned w/ x axis
-			gluCylinder(_quadric, 1, 1, h, 32, 16);
+			//gluCylinder(_quadric, 1, 1, h, 32, 16);
+			
+			// a different look
+			gluCylinder(_quadric, 1, 0, h, 32, 16);
+			gluCylinder(_quadric, 0, 1, h, 32, 16);
+			
 			glTranslatef(0, 0, h);
 			gluDisk(_quadric, 0, 1, 32, 16);
 		}
