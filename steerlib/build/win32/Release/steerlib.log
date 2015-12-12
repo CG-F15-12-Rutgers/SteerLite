@@ -1,16 +1,26 @@
-﻿Build started 2015/10/1 8:21:00.
-     1>Project "C:\Steer\SteerLite\steerlib\build\win32\steerlib.vcxproj" on node 2 (Build target(s)).
+﻿Build started 2015/12/7 19:41:38.
+     1>Project "C:\Users\Alex\Desktop\steerlite\steerlib\build\win32\steerlib.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I..\..\..\util\include /I..\..\include /I..\..\..\external /Zi /nologo /W3 /WX- /MP /O2 /Oi /Ot /GL /D _COMPILING_WIN32_STEERLIB /D ENABLE_GUI /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /Gy /arch:SSE2 /fp:fast /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"Release\\" /Fd"Release\vc140.pdb" /Gd /TP /errorReport:prompt ..\..\src\Camera.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I..\..\..\util\include /I..\..\include /I..\..\..\external /Zi /nologo /W3 /WX- /MP /O2 /Oi /Ot /GL /D _COMPILING_WIN32_STEERLIB /D ENABLE_GUI /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /Gy /arch:SSE2 /fp:fast /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"Release\\" /Fd"Release\vc140.pdb" /Gd /TP /errorReport:prompt ..\..\src\AStarPlanner.cpp
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE2'
-         Camera.cpp
-     1>C:\Steer\SteerLite\steerlib\include\util/GenericException.h(57): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface class 'Util::GenericException'
+         AStarPlanner.cpp
+     1>c:\users\alex\desktop\steerlite\steerlib\include\util/GenericException.h(57): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface class 'Util::GenericException'
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
-         C:\Steer\SteerLite\steerlib\include\util/GenericException.h(56): note: see declaration of 'Util::GenericException'
-     1>..\..\src\Camera.cpp(173): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-     1>..\..\src\Camera.cpp(174): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+         c:\users\alex\desktop\steerlite\steerlib\include\util/GenericException.h(56): note: see declaration of 'Util::GenericException'
+     1>c:\users\alex\desktop\steerlite\util\include\LogObject.h(85): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>..\..\src\AStarPlanner.cpp(83): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+     1>..\..\src\AStarPlanner.cpp(100): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+     1>..\..\src\AStarPlanner.cpp(110): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+     1>..\..\src\AStarPlanner.cpp(175): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+     1>..\..\src\AStarPlanner.cpp(258): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+     1>..\..\src\AStarPlanner.cpp(261): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+     1>..\..\src\AStarPlanner.cpp(270): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+     1>..\..\src\AStarPlanner.cpp(277): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+     1>..\..\src\AStarPlanner.cpp(280): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+     1>..\..\src\AStarPlanner.cpp(284): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Steer\SteerLite\build\win32\Release\steerlib.dll" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\Steer\SteerLite\build\win32\Release\ util.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"C:\Steer\SteerLite\build\win32\Release\steerlib.pdb" /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Steer\SteerLite\build\win32\Release\steerlib.lib" /MACHINE:X64 /DLL Release\AgentMetricsCollector.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Alex\Desktop\steerlite\build\win32\Release\steerlib.dll" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\Users\Alex\Desktop\steerlite\build\win32\Release\ util.lib opengl32.lib glu32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"C:\Users\Alex\Desktop\steerlite\build\win32\Release\steerlib.pdb" /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Alex\Desktop\steerlite\build\win32\Release\steerlib.lib" /MACHINE:X64 /DLL Release\AgentMetricsCollector.obj
+         Release\AStarPlanner.obj
          Release\BehaviorParameter.obj
          Release\Behaviour.obj
          Release\BenchmarkEngine.obj
@@ -19,7 +29,9 @@
          Release\CompositeTechniquePLE.obj
          Release\Curve.obj
          Release\FrameSaver.obj
+         Release\GJK_EPA.obj
          Release\OrientedWallObstacle.obj
+         Release\PolygonObstacle.obj
          Release\SimulationMetricsCollector.obj
          Release\GridDatabase2D.obj
          Release\CommandLineParser.obj
@@ -53,15 +65,15 @@
          Release\tinyxml.obj
          Release\tinyxmlerror.obj
          Release\tinyxmlparser.obj
-            Creating library C:\Steer\SteerLite\build\win32\Release\steerlib.lib and object C:\Steer\SteerLite\build\win32\Release\steerlib.exp
+            Creating library C:\Users\Alex\Desktop\steerlite\build\win32\Release\steerlib.lib and object C:\Users\Alex\Desktop\steerlite\build\win32\Release\steerlib.exp
          Generating code
-         2 of 8703 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+         2 of 9231 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
            0 functions were new in current compilation
            0 functions had inline decision re-evaluated but remain unchanged
          Finished generating code
-         steerlib.vcxproj -> C:\Steer\SteerLite\build\win32\Release\steerlib.dll
-     1>Done Building Project "C:\Steer\SteerLite\steerlib\build\win32\steerlib.vcxproj" (Build target(s)).
+         steerlib.vcxproj -> C:\Users\Alex\Desktop\steerlite\build\win32\Release\steerlib.dll
+     1>Done Building Project "C:\Users\Alex\Desktop\steerlite\steerlib\build\win32\steerlib.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:12.98
+Time Elapsed 00:00:04.25

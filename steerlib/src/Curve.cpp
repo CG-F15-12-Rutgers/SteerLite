@@ -67,15 +67,14 @@ void Curve::drawCurve(Color curveColor, float curveThickness, int window)
 	{
 		return;
 	}
-	// std::cout << "draw_curve is robust" << std::endl;
+	
 	// Move on the curve from t=0 to t=finalPoint, using window as step size, and linearly interpolate the curve points
 	if (!calculatePoint(startPoint, 1)) { return; }
-	// std::cout << "point 0 is working" << std::endl;
-	// std::cout << "time of the end control point is" << timeOfControl << "Number of steps :"<< (timeOfControl / window) - 1 << std::endl;
+	
 	for (int i = 0; i < (timeOfControl / window); i++)
 	{
 		if (!calculatePoint(endPoint, (i+1)*window)) { return; }
-		// std::cout << "point " << i << " is working" << std::endl;
+		
 		DrawLib::drawLine(startPoint, endPoint, curveColor, curveThickness);
 		startPoint = endPoint;
 	}
@@ -100,6 +99,7 @@ void Curve::sortControlPoints()
 	{
 		inline bool operator() (const CurvePoint& point1, const CurvePoint& point2)
 		{
+			// sort by time
 			return(point1.time < point2.time);
 		}
 	};
@@ -151,6 +151,8 @@ bool Curve::checkRobust()
 	}
 	//=========================================================================
 	*/
+
+	// At least two points are needed to make a curve
 	if (controlPoints.size()-2>=0)  return true;
 	else return false;
 }
@@ -172,7 +174,6 @@ bool Curve::findTimeInterval(unsigned int& nextPoint, float time)
 
 	if (time <= controlPoints[0].time | time > controlPoints[numberOfControl - 1].time) 
 	{
-		// std::cout << "ERROR>>>>Input time is out of the available time range" << std::endl;
 		return false;
 	}
 
